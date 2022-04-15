@@ -1,35 +1,35 @@
-import * as tapo from "tp-link-tapo-connect";
+import { callTapoDevice } from "./tapo.js";
+
+import http from "http";
 import fs from "fs";
 
-function get_credentials() {
-	let data = fs.readFileSync("./credentials.json");
-	let json_data = JSON.parse(data);
-	let email = json_data.email;
-	let password = json_data.password;
+const server = http.createServer((req, res) => {
+	if (
+		req.url === "/" &&
+		req.method === "POST" &&
+		req.headers["content-type"] === "application/json"
+	) {
+		const body = [];
+		req.on("data", (chunk) => {
+			body.push(chunk);
+		});
 
-    
-	return [email, password];
-}
+		req.on("end", async () => {
+			const parsedBody = Buffer.concat(body).toString();
+			console.log(parsedBody);
+			const json_data = JSON.parse(parsedBody);
+			const tapo_state = await callTapoDevice(
+				json_data.state,
+				json_data.email,
+				json_data.password,
+				json_data.devicename
+			);
 
-async function callTapoDevice(on_off) {
-	const [email, password] = get_credentials();
+			res.setHeader("Content-Type", "application/json");
+			res.write(JSON.stringify(tapo_state));
+			res.end();
+		});
+	}
+});
 
-	const cloudToken = await tapo.cloudLogin(email, password);
-	const devices = await tapo.listDevices(cloudToken);
-	let studio_device = devices.find((device) => {
-		return device.alias == "Studio";
-	});
-
-	const deviceToken = await tapo.loginDevice(email, password, studio_device);
-	const getDeviceInfoResponse = await tapo.getDeviceInfo(deviceToken);
-	console.log(getDeviceInfoResponse);
-
-    if (on_off) {
-        await tapo.turnOn(deviceToken);
-    } else {
-        await tapo.turnOff(deviceToken);
-    }
-	
-}
-
-await callTapoDevice(true);
+server.listen(3000);
