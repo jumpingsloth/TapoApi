@@ -23,9 +23,9 @@ export async function callTapoDevice(on_off, email, password, devicename) {
 	const getDeviceInfoResponse = await tapo.getDeviceInfo(deviceToken);
 	console.log(getDeviceInfoResponse);
 
-	if (on_off) {
+	if (on_off === true) {
 		await tapo.turnOn(deviceToken);
-	} else {
+	} else if (on_off === false) {
 		await tapo.turnOff(deviceToken);
 	}
 
