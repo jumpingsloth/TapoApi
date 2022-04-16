@@ -1,7 +1,6 @@
 import { callTapoDevice } from "./tapo.js";
 
 import http from "http";
-import fs from "fs";
 
 const server = http.createServer((req, res) => {
 	if (
@@ -15,19 +14,26 @@ const server = http.createServer((req, res) => {
 		});
 
 		req.on("end", async () => {
-			const parsedBody = Buffer.concat(body).toString();
-			console.log(parsedBody);
-			const json_data = JSON.parse(parsedBody);
-			const tapo_state = await callTapoDevice(
-				json_data.state,
-				json_data.email,
-				json_data.password,
-				json_data.devicename
-			);
+			try {
+				const parsedBody = Buffer.concat(body).toString();
 
-			res.setHeader("Content-Type", "application/json");
-			res.write(JSON.stringify(tapo_state));
-			res.end();
+				const json_data = JSON.parse(parsedBody);
+				const tapo_state = await callTapoDevice(
+					json_data.state,
+					json_data.email,
+					json_data.password,
+					json_data.devicename
+				);
+
+				delete parsedBody.password;
+				console.log(parsedBody);
+
+				res.setHeader("Content-Type", "application/json");
+				res.write(JSON.stringify(tapo_state));
+				res.end();
+			} catch (error) {
+				console.log(error.message());
+			}
 		});
 	}
 });
