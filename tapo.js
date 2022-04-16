@@ -1,18 +1,7 @@
 import * as tapo from "tp-link-tapo-connect";
 import fs from "fs";
 
-// function get_credentials() {
-// 	let data = fs.readFileSync("./credentials.json");
-// 	let json_data = JSON.parse(data);
-// 	let email = json_data.email;
-// 	let password = json_data.password;
-
-// 	return [email, password];
-// }
-
 export async function callTapoDevice(on_off, email, password, devicename) {
-	// const [email, password] = get_credentials();
-
 	const cloudToken = await tapo.cloudLogin(email, password);
 	const devices = await tapo.listDevices(cloudToken);
 	let studio_device = devices.find((device) => {
@@ -31,5 +20,3 @@ export async function callTapoDevice(on_off, email, password, devicename) {
 
 	return tapo.getDeviceInfo(deviceToken);
 }
-
-// await callTapoDevice(true);

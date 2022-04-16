@@ -16,26 +16,25 @@ const server = http.createServer((req, res) => {
 		req.on("end", async () => {
 			try {
 				const parsedBody = Buffer.concat(body).toString();
-
 				const json_data = JSON.parse(parsedBody);
+				console.log("Received request : " + json_data.email + "/" + json_data.devicename + "=" + json_data.state)
 				const tapo_state = await callTapoDevice(
 					json_data.state,
 					json_data.email,
 					json_data.password,
 					json_data.devicename
 				);
-
-				delete parsedBody.password;
-				console.log(parsedBody);
-
+				let response = JSON.stringify(tapo_state);
+				console.log("Tapo response: " + response)
 				res.setHeader("Content-Type", "application/json");
-				res.write(JSON.stringify(tapo_state));
+				res.write(reponse);
 				res.end();
 			} catch (error) {
-				console.log(error.message());
+				console.log(error.toString());
 			}
 		});
 	}
 });
 
+console.log("Running server on port 3000")
 server.listen(3000);
