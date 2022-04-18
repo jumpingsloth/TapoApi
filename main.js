@@ -27,7 +27,7 @@ const server = http.createServer((req, res) => {
 				let response = JSON.stringify(tapo_state);
 				console.log("Tapo response: " + response)
 				res.setHeader("Content-Type", "application/json");
-				res.write(reponse);
+				res.write(response);
 				res.end();
 			} catch (error) {
 				console.log(error.toString());

@@ -9,7 +9,8 @@
 	"author": "",
 	"license": "ISC",
 	"dependencies": {
-		"tp-link-tapo-connect": "^1.0.6"
+		"tp-link-tapo-connect": "^1.0.6",
+		"tplink-cloud-api": "^0.8.1"
 	},
 	"type": "module"
 }
